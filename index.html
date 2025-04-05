@@ -140,7 +140,7 @@
                 radial-gradient(circle at 75% 85%, rgba(100, 181, 246, 0.1) 8%, transparent 12%),
                 radial-gradient(circle at 25% 75%, rgba(100, 181, 246, 0.1) 12%, transparent 18%);
             z-index: 2;
-            transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transition: transform 0.3s ease;
         }
         
         .btn-wrapper {
@@ -295,7 +295,7 @@
             z-index: 1;
             background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h100v100H0z' fill='%23ffffff'/%3E%3Cpath d='M0 20h100M0 40h100M0 60h100M0 80h100' stroke='%23ffe6eb' stroke-width='1'/%3E%3C/svg%3E");
             background-size: 20px 20px;
-            transition: transform 0.3s ease-out;
+            transition: transform 0.3s ease;
             touch-action: pan-y;
         }
         
@@ -633,7 +633,6 @@
         
         <!-- 第二个页面：信件内容 -->
         <div class="card">
-            <div class="pull-hint">下拉返回</div>
             <div class="letter">
                 <h1>亲爱的朋友：</h1>
                 <p class="date">2025年4月5日</p>
@@ -651,8 +650,46 @@
     </div>
 
     <script>
-        // 创建浮动的信封图案
+        let backgroundElements = [];
+        let envelopePatterns = [];
+        let orientationHandler = null;
+
+        function createBackgroundElements() {
+            // 清理之前的元素
+            backgroundElements.forEach(element => element.remove());
+            backgroundElements = [];
+            
+            const body = document.body;
+            // 根据屏幕大小调整装饰元素数量
+            const isMobile = window.innerWidth <= 650;
+            const elements = isMobile ? 6 : 12;
+            
+            for (let i = 0; i < elements; i++) {
+                const element = document.createElement('div');
+                element.style.position = 'absolute';
+                element.style.width = (Math.random() * (isMobile ? 20 : 30) + (isMobile ? 15 : 20)) + 'px';
+                element.style.height = (Math.random() * (isMobile ? 20 : 30) + (isMobile ? 15 : 20)) + 'px';
+                element.style.left = (Math.random() * 100) + 'vw';
+                element.style.top = (Math.random() * 100) + 'vh';
+                element.style.opacity = '0.2';
+                element.style.zIndex = '-1';
+                element.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                element.style.background = Math.random() > 0.5 ? '#e3f2fd' : 'transparent';
+                element.style.border = Math.random() > 0.5 ? '2px solid #bbdefb' : 'none';
+                element.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
+                element.style.animation = 'float ' + (Math.random() * 10 + 10) + 's infinite ease-in-out';
+                element.style.animationDelay = (Math.random() * 5) + 's';
+                
+                body.appendChild(element);
+                backgroundElements.push(element);
+            }
+        }
+        
         function createEnvelopePatterns() {
+            // 清理之前的图案
+            envelopePatterns.forEach(pattern => pattern.remove());
+            envelopePatterns = [];
+            
             const envelopeDesign = document.querySelector('.envelope-design');
             // 根据屏幕大小调整图案数量
             const isMobile = window.innerWidth <= 650;
@@ -696,118 +733,98 @@
                 pattern.style.animationDelay = (Math.random() * 5) + 's';
                 
                 envelopeDesign.appendChild(pattern);
-            }
-        }
-        
-        // 创建背景额外装饰
-        function createBackgroundElements() {
-            const body = document.body;
-            // 根据屏幕大小调整装饰元素数量
-            const isMobile = window.innerWidth <= 650;
-            const elements = isMobile ? 6 : 12;
-            
-            for (let i = 0; i < elements; i++) {
-                const element = document.createElement('div');
-                element.style.position = 'absolute';
-                element.style.width = (Math.random() * (isMobile ? 20 : 30) + (isMobile ? 15 : 20)) + 'px';
-                element.style.height = (Math.random() * (isMobile ? 20 : 30) + (isMobile ? 15 : 20)) + 'px';
-                element.style.left = (Math.random() * 100) + 'vw';
-                element.style.top = (Math.random() * 100) + 'vh';
-                element.style.opacity = '0.2';
-                element.style.zIndex = '-1';
-                element.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                element.style.background = Math.random() > 0.5 ? '#e3f2fd' : 'transparent';
-                element.style.border = Math.random() > 0.5 ? '2px solid #bbdefb' : 'none';
-                element.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
-                element.style.animation = 'float ' + (Math.random() * 10 + 10) + 's infinite ease-in-out';
-                element.style.animationDelay = (Math.random() * 5) + 's';
-                
-                body.appendChild(element);
+                envelopePatterns.push(pattern);
             }
         }
         
         // 粒子效果
         function createParticles() {
-            const particles = document.querySelector('.particles');
-            const colors = ['#ffb6c1', '#ffccd5', '#ffd1dc', '#ffe6eb', '#fff0f5'];
-            
-            // 清空之前的粒子
-            particles.innerHTML = '';
-            
-            // 根据屏幕大小调整星星数量
-            const isMobile = window.innerWidth <= 650;
-            const starCount = isMobile ? 8 : 15;
-            
-            // 创建星星
-            for (let i = 0; i < starCount; i++) {
-                setTimeout(() => {
-                    const star = document.createElement('div');
-                    star.classList.add('star');
-                    
-                    const size = Math.random() * (isMobile ? 15 : 20) + (isMobile ? 8 : 10);
-                    star.style.width = `${size}px`;
-                    star.style.height = `${size}px`;
-                    
-                    const startX = Math.random() * 100;
-                    const endX = startX + ((Math.random() - 0.5) * 50);
-                    
-                    star.style.left = `${startX}%`;
-                    
-                    // 创建SVG星星
-                    const color = colors[Math.floor(Math.random() * colors.length)];
-                    
-                    // 随机选择形状：星星
-                    star.innerHTML = `<svg viewBox="0 0 51 48" xmlns="http://www.w3.org/2000/svg">
-                        <path fill="${color}" d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z"/>
-                    </svg>`;
-                    
-                    particles.appendChild(star);
-                    
+            try {
+                const particles = document.querySelector('.particles');
+                if (!particles) return; // 安全检查
+                
+                const colors = ['#ffb6c1', '#ffccd5', '#ffd1dc', '#ffe6eb', '#fff0f5'];
+                
+                // 清空之前的粒子
+                particles.innerHTML = '';
+                
+                // 根据屏幕大小调整星星数量
+                const isMobile = window.innerWidth <= 650;
+                const starCount = isMobile ? 8 : 15;
+                
+                // 创建星星
+                for (let i = 0; i < starCount; i++) {
                     setTimeout(() => {
-                        star.style.opacity = '1';
-                        star.style.transform = `translate(${(Math.random() - 0.5) * 30}px, ${-Math.random() * 300}px) rotate(${Math.random() * 360}deg)`;
-                        star.style.transition = `transform ${Math.random() * 3 + 2}s ease-out, opacity ${Math.random() * 3 + 2}s ease-out`;
+                        const star = document.createElement('div');
+                        star.classList.add('star');
+                        
+                        const size = Math.random() * (isMobile ? 15 : 20) + (isMobile ? 8 : 10);
+                        star.style.width = `${size}px`;
+                        star.style.height = `${size}px`;
+                        
+                        const startX = Math.random() * 100;
+                        const endX = startX + ((Math.random() - 0.5) * 50);
+                        
+                        star.style.left = `${startX}%`;
+                        
+                        // 创建SVG星星
+                        const color = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        // 随机选择形状：星星
+                        star.innerHTML = `<svg viewBox="0 0 51 48" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="${color}" d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z"/>
+                        </svg>`;
+                        
+                        particles.appendChild(star);
                         
                         setTimeout(() => {
-                            star.style.opacity = '0';
-                        }, Math.random() * 2000 + 2000);
-                    }, 10);
-                }, i * 150);
-            }
-            
-            // 创建彩色气泡
-            const confettiCount = isMobile ? 4 : 8;
-            for (let i = 0; i < confettiCount; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.classList.add('confetti');
-                    
-                    const size = Math.random() * (isMobile ? 20 : 30) + (isMobile ? 15 : 20);
-                    confetti.style.width = `${size}px`;
-                    confetti.style.height = `${size}px`;
-                    
-                    const startPositionX = Math.random() * 80 + 10;
-                    const startPositionY = Math.random() * 80 + 10;
-                    
-                    confetti.style.left = `${startPositionX}%`;
-                    confetti.style.top = `${startPositionY}%`;
-                    confetti.style.animationDelay = `${Math.random() * 2}s`;
-                    
-                    // 随机形状（圆形）
-                    const shape = 'circle';
-                    const color = colors[Math.floor(Math.random() * colors.length)];
-                    
-                    confetti.innerHTML = `
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="50" r="50" fill="${color}" />
-                    </svg>`;
-                    
-                    particles.appendChild(confetti);
-                    
+                            star.style.opacity = '1';
+                            star.style.transform = `translate(${(Math.random() - 0.5) * 30}px, ${-Math.random() * 300}px) rotate(${Math.random() * 360}deg)`;
+                            star.style.transition = `transform ${Math.random() * 3 + 2}s ease-out, opacity ${Math.random() * 3 + 2}s ease-out`;
+                            
+                            setTimeout(() => {
+                                star.style.opacity = '0';
+                            }, Math.random() * 2000 + 2000);
+                        }, 10);
+                    }, i * 150);
+                }
+                
+                // 创建彩色气泡
+                const confettiCount = isMobile ? 4 : 8;
+                for (let i = 0; i < confettiCount; i++) {
                     setTimeout(() => {
-                        confetti.classList.add('show');
-                    }, 100);
-                }, i * 300 + 500);
+                        const confetti = document.createElement('div');
+                        confetti.classList.add('confetti');
+                        
+                        const size = Math.random() * (isMobile ? 20 : 30) + (isMobile ? 15 : 20);
+                        confetti.style.width = `${size}px`;
+                        confetti.style.height = `${size}px`;
+                        
+                        const startPositionX = Math.random() * 80 + 10;
+                        const startPositionY = Math.random() * 80 + 10;
+                        
+                        confetti.style.left = `${startPositionX}%`;
+                        confetti.style.top = `${startPositionY}%`;
+                        confetti.style.animationDelay = `${Math.random() * 2}s`;
+                        
+                        // 随机形状（圆形）
+                        const shape = 'circle';
+                        const color = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        confetti.innerHTML = `
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="50" fill="${color}" />
+                        </svg>`;
+                        
+                        particles.appendChild(confetti);
+                        
+                        setTimeout(() => {
+                            confetti.classList.add('show');
+                        }, 100);
+                    }, i * 300 + 500);
+                }
+            } catch (error) {
+                console.error('创建粒子效果失败:', error);
             }
         }
         
@@ -837,8 +854,7 @@
             const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
             
             if (isTouchDevice) {
-                // 触摸设备上的轻微3D效果
-                window.addEventListener('deviceorientation', function(e) {
+                orientationHandler = function(e) {
                     if (e.beta && e.gamma) {
                         const tiltX = Math.min(Math.max(e.gamma, -10), 10) * 0.3;
                         const tiltY = Math.min(Math.max(e.beta - 45, -10), 10) * 0.3;
@@ -847,7 +863,9 @@
                             envelope.style.transform = `perspective(1000px) rotateX(${-tiltY}deg) rotateY(${tiltX}deg)`;
                         }
                     }
-                });
+                };
+                
+                window.addEventListener('deviceorientation', orientationHandler);
             } else {
                 // 鼠标设备上的悬停效果
                 container.addEventListener('mousemove', function(e) {
@@ -886,34 +904,28 @@
         
         // 确保按钮点击事件正常工作
         document.addEventListener('DOMContentLoaded', function() {
+            const card = document.querySelector('.card');
+            const envelope = document.querySelector('.envelope');
+            let startY = 0;
+            let currentY = 0;
+            let isPulling = false;
+            
+            // 打开信封
             document.querySelector('.btn-open').addEventListener('click', function() {
-                // 打开信封
-                document.querySelector('.envelope').classList.add('opened');
-                
-                // 创建粒子效果
+                envelope.classList.add('opened');
                 createParticles();
-                
-                // 在移动设备上可能需要震动反馈
                 if (navigator.vibrate) {
                     navigator.vibrate(50);
                 }
             });
-            
-            // 添加下拉返回功能
-            const card = document.querySelector('.card');
-            const pullHint = document.querySelector('.pull-hint');
-            let startY = 0;
-            let currentY = 0;
-            let isPulling = false;
             
             // 触摸开始
             card.addEventListener('touchstart', function(e) {
                 if (card.getBoundingClientRect().top <= 0) {
                     startY = e.touches[0].clientY;
                     isPulling = true;
-                    card.classList.add('pulling');
                 }
-            });
+            }, { passive: true });
             
             // 触摸移动
             card.addEventListener('touchmove', function(e) {
@@ -923,38 +935,43 @@
                 const diff = currentY - startY;
                 
                 if (diff > 0) {
+                    e.preventDefault();
                     card.style.transform = `translateY(${diff}px)`;
-                    pullHint.style.opacity = Math.min(diff / 100, 1);
                 }
-            });
+            }, { passive: false });
             
             // 触摸结束
             card.addEventListener('touchend', function() {
                 if (!isPulling) return;
                 
                 const diff = currentY - startY;
-                card.classList.remove('pulling');
+                isPulling = false;
                 
                 if (diff > 100) {
-                    // 如果下拉距离超过100px，返回信封
-                    document.querySelector('.envelope').classList.remove('opened');
+                    // 返回信封
+                    card.style.transform = 'translateY(100%)';
+                    envelope.style.transform = 'translateY(0)';
+                    
+                    setTimeout(() => {
+                        envelope.classList.remove('opened');
+                        card.style.transform = '';
+                        envelope.style.transform = '';
+                    }, 300);
+                    
                     if (navigator.vibrate) {
                         navigator.vibrate(50);
                     }
+                } else {
+                    // 回弹
+                    card.style.transform = '';
                 }
-                
-                // 重置状态
-                card.style.transform = '';
-                pullHint.style.opacity = '0.8';
-                isPulling = false;
             });
             
-            // 鼠标事件支持
+            // 鼠标事件
             card.addEventListener('mousedown', function(e) {
                 if (card.getBoundingClientRect().top <= 0) {
                     startY = e.clientY;
                     isPulling = true;
-                    card.classList.add('pulling');
                 }
             });
             
@@ -966,7 +983,6 @@
                 
                 if (diff > 0) {
                     card.style.transform = `translateY(${diff}px)`;
-                    pullHint.style.opacity = Math.min(diff / 100, 1);
                 }
             });
             
@@ -974,17 +990,22 @@
                 if (!isPulling) return;
                 
                 const diff = currentY - startY;
-                card.classList.remove('pulling');
+                isPulling = false;
                 
                 if (diff > 100) {
-                    // 如果下拉距离超过100px，返回信封
-                    document.querySelector('.envelope').classList.remove('opened');
+                    // 返回信封
+                    card.style.transform = 'translateY(100%)';
+                    envelope.style.transform = 'translateY(0)';
+                    
+                    setTimeout(() => {
+                        envelope.classList.remove('opened');
+                        card.style.transform = '';
+                        envelope.style.transform = '';
+                    }, 300);
+                } else {
+                    // 回弹
+                    card.style.transform = '';
                 }
-                
-                // 重置状态
-                card.style.transform = '';
-                pullHint.style.opacity = '0.8';
-                isPulling = false;
             });
         });
         
@@ -1002,6 +1023,17 @@
                 e.preventDefault();
             }
         }, { passive: false });
+
+        // 添加清理函数
+        function cleanup() {
+            if (orientationHandler) {
+                window.removeEventListener('deviceorientation', orientationHandler);
+            }
+            // 清理其他资源...
+        }
+
+        // 在适当的时机调用清理函数，比如页面卸载时
+        window.addEventListener('unload', cleanup);
     </script>
 </body>
 </html>
