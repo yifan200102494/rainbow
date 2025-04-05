@@ -5,6 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>朋友贺卡</title>
     <style>
+        :root {
+            color-scheme: light;
+            forced-color-adjust: none;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root {
+                color-scheme: light;
+            }
+            
+            body {
+                background-color: #f5f2e9 !important;
+                background-image: linear-gradient(to bottom right, #f5f2e9, #efe8d8) !important;
+            }
+            
+            .container {
+                background-color: #faf7f0 !important;
+            }
+            
+            .envelope {
+                background-color: #faf7f0 !important;
+            }
+            
+            .envelope-content {
+                background-color: #faf7f0 !important;
+            }
+            
+            .card h1, .date, .letter-content, .signature {
+                color: #961c93 !important;
+            }
+        }
+        
         body {
             font-family: 'Noto Sans SC', sans-serif;
             background-color: #f5f2e9;
@@ -52,7 +84,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: rgba(250, 247, 240, 0.9);
+            background-color: #faf7f0;
             background-image: 
                 radial-gradient(circle at 15% 15%, rgba(185, 168, 138, 0.1) 5%, transparent 8%),
                 radial-gradient(circle at 85% 25%, rgba(185, 168, 138, 0.1) 10%, transparent 15%),
@@ -128,7 +160,7 @@
             animation: fadeIn 1.5s ease-in-out;
             position: relative;
             z-index: 3;
-            background-color: rgba(250, 247, 240, 0.7);
+            background-color: #faf7f0;
             padding: 15px 25px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(185, 168, 138, 0.2);
