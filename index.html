@@ -967,9 +967,11 @@
             // 打开信封
             const btnOpen = document.querySelector('.btn-open');
             
-            // 添加触摸事件处理
-            btnOpen.addEventListener('touchstart', function(e) {
-                e.preventDefault(); // 防止默认行为
+            // 检测是否为三星设备
+            const isSamsung = /samsung/i.test(navigator.userAgent);
+            
+            // 统一的事件处理函数
+            function handleOpen() {
                 if (isAnimating) return;
                 isAnimating = true;
                 
@@ -983,23 +985,39 @@
                 if (navigator.vibrate) {
                     navigator.vibrate(50);
                 }
+            }
+            
+            // 为三星设备添加特殊处理
+            if (isSamsung) {
+                // 添加 pointerdown 事件支持 S Pen
+                btnOpen.addEventListener('pointerdown', function(e) {
+                    e.preventDefault();
+                    handleOpen();
+                });
+                
+                // 添加 MSPointerDown 事件（旧版 IE 支持）
+                btnOpen.addEventListener('MSPointerDown', function(e) {
+                    e.preventDefault();
+                    handleOpen();
+                });
+            }
+            
+            // 触摸事件处理
+            btnOpen.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                handleOpen();
             });
             
-            // 保留点击事件作为备用
+            // 点击事件处理
             btnOpen.addEventListener('click', function(e) {
-                if (isAnimating) return;
-                isAnimating = true;
-                
-                envelope.classList.add('opened');
-                setTimeout(() => {
-                    card.classList.remove('hidden');
-                    createParticles();
-                    isAnimating = false;
-                }, 400);
-                
-                if (navigator.vibrate) {
-                    navigator.vibrate(50);
-                }
+                e.preventDefault();
+                handleOpen();
+            });
+            
+            // 添加鼠标事件支持
+            btnOpen.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                handleOpen();
             });
             
             // 双击返回功能
