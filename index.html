@@ -264,6 +264,26 @@
             opacity: 1;
         }
         
+        .card::before {
+            content: '✉';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            color: rgba(100, 181, 246, 0.2);
+            transform: rotate(-15deg);
+        }
+        
+        .card::after {
+            content: '★';
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: rgba(100, 181, 246, 0.2);
+            transform: rotate(15deg);
+        }
+        
         .card.hidden {
             opacity: 0;
             pointer-events: none;
@@ -400,8 +420,19 @@
             left: -15px;
             width: 30px;
             height: 30px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M20 3v2h-1v6l2 3v2h-6v7h-2v-7H7v-2l2-3V5H8V3h12zM9 5v6.606L7.404 14h9.192L15 11.606V5H9z' fill='rgba(255,182,193,0.2)'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M20 3v2h-1v6l2 3v2h-6v7h-2v-7H7v-2l2-3V5H8V3h12zM9 5v6.606L7.404 14h9.192L15 11.606V5H9z' fill='rgba(150, 28, 147, 0.2)'/%3E%3C/svg%3E");
             opacity: 0.7;
+        }
+        
+        .letter::after {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            right: -15px;
+            width: 30px;
+            height: 30px;
+            background-image: none;
+            opacity: 0;
         }
         
         .particles {
@@ -420,9 +451,12 @@
         
         /* 星星和气泡动画 */
         @keyframes float {
-            0% { transform: translateY(0) rotate(0); }
-            50% { transform: translateY(-20px) rotate(10deg); }
-            100% { transform: translateY(0) rotate(0); }
+            0%, 100% {
+                transform: translateY(0) rotate(var(--rotation));
+            }
+            50% {
+                transform: translateY(-10px) rotate(var(--rotation));
+            }
         }
 
         .confetti {
@@ -656,6 +690,12 @@
                 transform: translateY(-3px);
             }
         }
+
+        .card-pattern {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
@@ -684,7 +724,7 @@
                     <p>好好生活</p>
                     <p>　　　　  来日方长</p>
                 </div>
-                <p class="signature">槑
+                <p class="signature">槑</p>
             </div>
         </div>
         
@@ -762,7 +802,7 @@
                 // 随机生成大小和样式
                 const size = Math.random() * (isMobile ? 15 : 20) + (isMobile ? 8 : 10);
                 pattern.style.fontSize = size + 'px';
-                pattern.style.color = `rgba(100, 181, 246, ${Math.random() * 0.2 + 0.1})`;
+                pattern.style.color = `rgba(100, 181, 246, ${Math.random() * 0.3 + 0.2})`;
                 pattern.style.transform = `rotate(${Math.random() * 60 - 30}deg)`;
                 pattern.style.pointerEvents = 'none';
                 pattern.style.zIndex = '1';
@@ -979,6 +1019,7 @@
                 setTimeout(() => {
                     card.classList.remove('hidden');
                     createParticles();
+                    createCardPatterns();
                     isAnimating = false;
                 }, 400);
                 
@@ -1057,6 +1098,12 @@
                     navigator.vibrate(50);
                 }
             }
+
+            // 在窗口大小改变时重新创建装饰
+            window.addEventListener('resize', function() {
+                if (!envelope.classList.contains('opened')) return;
+                createCardPatterns();
+            });
         });
         
         // 监听屏幕方向变化
@@ -1084,6 +1131,88 @@
 
         // 在适当的时机调用清理函数，比如页面卸载时
         window.addEventListener('unload', cleanup);
+
+        function createCardPatterns() {
+            const card = document.querySelector('.card');
+            // 清理之前的装饰元素
+            const oldPatterns = card.querySelectorAll('.card-pattern');
+            oldPatterns.forEach(pattern => pattern.remove());
+            
+            // 根据屏幕大小调整图案数量
+            const isMobile = window.innerWidth <= 650;
+            const patterns = isMobile ? 8 : 12;
+            const symbols = ['✉', '★', '♦'];
+            
+            // 先添加圆形背景
+            const circles = isMobile ? 4 : 6;
+            for (let i = 0; i < circles; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('card-pattern', 'circle-pattern');
+                circle.style.position = 'absolute';
+                
+                // 随机生成位置
+                const posX = Math.random() * 80 + 10; // 10% - 90%
+                const posY = Math.random() * 80 + 10; // 10% - 90%
+                
+                circle.style.left = posX + '%';
+                circle.style.top = posY + '%';
+                
+                // 随机生成大小
+                const size = Math.random() * (isMobile ? 60 : 100) + (isMobile ? 40 : 60);
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.borderRadius = '50%';
+                circle.style.background = `rgba(100, 181, 246, ${Math.random() * 0.08 + 0.02})`;
+                circle.style.zIndex = '0';
+                
+                // 添加动画
+                circle.style.animation = `float ${Math.random() * 8 + 12}s infinite ease-in-out alternate`;
+                circle.style.animationDelay = (Math.random() * 5) + 's';
+                
+                card.appendChild(circle);
+            }
+            
+            // 再添加符号装饰
+            for (let i = 0; i < patterns; i++) {
+                const pattern = document.createElement('div');
+                pattern.classList.add('card-pattern');
+                pattern.style.position = 'absolute';
+                
+                // 随机生成位置，避开中心文字区域
+                let posX, posY;
+                if (Math.random() > 0.5) {
+                    posX = Math.random() * 30 + 5;
+                } else {
+                    posX = Math.random() * 30 + 65;
+                }
+                
+                if (Math.random() > 0.5) {
+                    posY = Math.random() * 30 + 5;
+                } else {
+                    posY = Math.random() * 30 + 65;
+                }
+                
+                pattern.style.left = posX + '%';
+                pattern.style.top = posY + '%';
+                
+                // 随机生成大小和样式
+                const size = Math.random() * (isMobile ? 15 : 20) + (isMobile ? 8 : 10);
+                pattern.style.fontSize = size + 'px';
+                pattern.style.color = `rgba(100, 181, 246, ${Math.random() * 0.2 + 0.1})`;
+                pattern.style.transform = `rotate(${Math.random() * 60 - 30}deg)`;
+                pattern.style.pointerEvents = 'none';
+                pattern.style.zIndex = '1';
+                
+                // 随机选择符号
+                pattern.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                
+                // 添加动画
+                pattern.style.animation = `float ${Math.random() * 5 + 10}s infinite ease-in-out alternate`;
+                pattern.style.animationDelay = (Math.random() * 5) + 's';
+                
+                card.appendChild(pattern);
+            }
+        }
     </script>
 </body>
 </html>
